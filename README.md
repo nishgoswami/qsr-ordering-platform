@@ -1,5 +1,12 @@
 # QSR Ordering Platform
 
+[![GitHub](https://img.shields.io/badge/github-nishgoswami%2Fqsr--ordering--platform-blue?logo=github)](https://github.com/nishgoswami/qsr-ordering-platform)
+[![Project Status](https://img.shields.io/badge/status-in%20development-yellow)](https://github.com/users/nishgoswami/projects/2)
+[![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+[![Progress](https://img.shields.io/badge/progress-0%25-red)](http://localhost:3003)
+[![Node Version](https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen)](https://nodejs.org)
+[![TypeScript](https://img.shields.io/badge/typescript-5.3-blue)](https://www.typescriptlang.org/)
+
 > A comprehensive restaurant ordering and management platform supporting QSR (Quick Service Restaurant) and casual dining operations.
 
 ## 🚀 Project Overview
@@ -70,9 +77,15 @@ qsr-ordering-platform/
 
 ## 🚦 Project Status
 
-See [Project Tracker](./tools/project-tracker/README.md) for real-time status.
-
+**Live Tracker:** [http://localhost:3003](http://localhost:3003) (Run `npm run dev:tracker`)  
+**GitHub Projects:** [Project Board](https://github.com/users/nishgoswami/projects/2)  
 **Current Phase:** Initial Development Setup
+
+### Quick Stats
+- ✅ Completed: 5 tasks
+- 🟡 In Progress: 2 tasks  
+- 📋 Pending: 8 tasks
+- 📊 Overall Progress: 0% (MVP not yet released)
 
 ## 📚 Documentation
 
