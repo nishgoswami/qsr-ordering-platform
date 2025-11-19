@@ -1,6 +1,7 @@
 'use client';
 
-import { CheckCircle2, Clock, Lightbulb, Package, Database, Smartphone, Settings, CreditCard, MapPin, Bell, MessageSquare, Printer, BarChart3, Users, Shield } from 'lucide-react';
+import { CheckCircle2, Clock, Lightbulb, Package, Database, Smartphone, Settings, CreditCard, MapPin, Bell, MessageSquare, Printer, BarChart3, Users, Shield, TrendingUp, Calendar, Target } from 'lucide-react';
+import { useState } from 'react';
 
 type FeatureStatus = 'production' | 'development' | 'planning' | 'backlog';
 
@@ -353,6 +354,7 @@ const statusIcons = {
 };
 
 export default function ProjectTracker() {
+  const [viewMode, setViewMode] = useState<'grid' | 'timeline' | 'progress'>('grid');
   const categories = [...new Set(features.map(f => f.category))];
   
   const getStats = () => {
@@ -361,11 +363,21 @@ export default function ProjectTracker() {
       development: features.filter(f => f.status === 'development').length,
       planning: features.filter(f => f.status === 'planning').length,
       backlog: features.filter(f => f.status === 'backlog').length,
-      total: features.length
+      total: features.length,
+      completionPercentage: Math.round((features.filter(f => f.status === 'production').length / features.length) * 100),
+      inProgressPercentage: Math.round((features.filter(f => f.status === 'development').length / features.length) * 100),
+      highPriority: features.filter(f => f.priority === 'high' && f.status !== 'production').length
     };
   };
 
   const stats = getStats();
+  
+  const milestones = [
+    { name: 'Project Setup', date: '2025-11-18', completed: true, features: ['monorepo', 'database', 'auth'] },
+    { name: 'Core Apps Launch', date: '2025-12-15', completed: false, features: ['menu-browse', 'cart', 'checkout', 'kitchen-app'] },
+    { name: 'MVP Release', date: '2026-01-15', completed: false, features: ['printer', 'delivery-zones', 'email', 'whatsapp'] },
+    { name: 'Public Beta', date: '2026-02-01', completed: false, features: ['reports', 'chat', 'order-tracking'] }
+  ];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
@@ -395,6 +407,77 @@ export default function ProjectTracker() {
           <StatCard label="Planning" count={stats.planning} color="blue" />
           <StatCard label="Backlog" count={stats.backlog} color="gray" />
           <StatCard label="Total Features" count={stats.total} color="slate" />
+        </div>
+        
+        {/* Progress Chart */}
+        <div className="mt-6 bg-white rounded-lg border border-slate-200 p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold text-slate-900">Overall Progress</h3>
+            <div className="flex gap-2">
+              <span className="text-2xl font-bold text-green-600">{stats.completionPercentage}%</span>
+              <span className="text-sm text-slate-500 self-end">Complete</span>
+            </div>
+          </div>
+          <div className="space-y-3">
+            <ProgressBar label="Production" percentage={stats.completionPercentage} color="green" />
+            <ProgressBar label="Development" percentage={stats.inProgressPercentage} color="yellow" />
+            <ProgressBar label="Planning" percentage={Math.round((stats.planning / stats.total) * 100)} color="blue" />
+          </div>
+          {stats.highPriority > 0 && (
+            <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg flex items-center gap-2">
+              <Target className="w-5 h-5 text-red-600" />
+              <span className="text-sm font-medium text-red-900">
+                {stats.highPriority} high-priority {stats.highPriority === 1 ? 'feature' : 'features'} pending
+              </span>
+            </div>
+          )}
+        </div>
+
+        {/* Milestones Timeline */}
+        <div className="mt-6 bg-white rounded-lg border border-slate-200 p-6">
+          <h3 className="text-lg font-semibold text-slate-900 mb-4 flex items-center gap-2">
+            <Calendar className="w-5 h-5" />
+            Development Milestones
+          </h3>
+          <div className="space-y-4">
+            {milestones.map((milestone, idx) => (
+              <MilestoneItem key={idx} milestone={milestone} />
+            ))}
+          </div>
+        </div>
+
+        {/* View Mode Toggle */}
+        <div className="mt-6 flex justify-center gap-2">
+          <button
+            onClick={() => setViewMode('grid')}
+            className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+              viewMode === 'grid' 
+                ? 'bg-blue-600 text-white' 
+                : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-50'
+            }`}
+          >
+            Grid View
+          </button>
+          <button
+            onClick={() => setViewMode('timeline')}
+            className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+              viewMode === 'timeline' 
+                ? 'bg-blue-600 text-white' 
+                : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-50'
+            }`}
+          >
+            Timeline
+          </button>
+          <button
+            onClick={() => setViewMode('progress')}
+            className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+              viewMode === 'progress' 
+                ? 'bg-blue-600 text-white' 
+                : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-50'
+            }`}
+          >
+            Progress Chart
+          </button>
         </div>
       </div>
 
@@ -499,6 +582,79 @@ function FeatureCard({ feature }: { feature: Feature }) {
         }`}>
           {feature.priority.toUpperCase()}
         </span>
+      </div>
+    </div>
+  );
+}
+
+function ProgressBar({ label, percentage, color }: { label: string; percentage: number; color: string }) {
+  const colorClasses = {
+    green: 'bg-green-500',
+    yellow: 'bg-yellow-500',
+    blue: 'bg-blue-500',
+    gray: 'bg-gray-500'
+  };
+
+  return (
+    <div>
+      <div className="flex justify-between text-sm mb-1">
+        <span className="font-medium text-slate-700">{label}</span>
+        <span className="text-slate-600">{percentage}%</span>
+      </div>
+      <div className="w-full bg-slate-100 rounded-full h-2.5">
+        <div 
+          className={`h-2.5 rounded-full transition-all duration-500 ${colorClasses[color as keyof typeof colorClasses]}`}
+          style={{ width: `${percentage}%` }}
+        />
+      </div>
+    </div>
+  );
+}
+
+interface Milestone {
+  name: string;
+  date: string;
+  completed: boolean;
+  features: string[];
+}
+
+function MilestoneItem({ milestone }: { milestone: Milestone }) {
+  const completedFeatures = milestone.features.filter(fId => 
+    features.find(f => f.id === fId)?.status === 'production'
+  ).length;
+  const totalFeatures = milestone.features.length;
+  const progress = Math.round((completedFeatures / totalFeatures) * 100);
+
+  return (
+    <div className={`p-4 rounded-lg border-2 ${
+      milestone.completed 
+        ? 'bg-green-50 border-green-300' 
+        : 'bg-slate-50 border-slate-200'
+    }`}>
+      <div className="flex items-center justify-between mb-2">
+        <div className="flex items-center gap-2">
+          {milestone.completed ? (
+            <CheckCircle2 className="w-5 h-5 text-green-600" />
+          ) : (
+            <Clock className="w-5 h-5 text-slate-400" />
+          )}
+          <span className="font-semibold text-slate-900">{milestone.name}</span>
+        </div>
+        <span className="text-sm text-slate-600">{milestone.date}</span>
+      </div>
+      <div className="mt-2">
+        <div className="flex justify-between text-xs text-slate-600 mb-1">
+          <span>{completedFeatures} of {totalFeatures} features</span>
+          <span>{progress}%</span>
+        </div>
+        <div className="w-full bg-slate-200 rounded-full h-2">
+          <div 
+            className={`h-2 rounded-full transition-all ${
+              milestone.completed ? 'bg-green-500' : 'bg-blue-500'
+            }`}
+            style={{ width: `${progress}%` }}
+          />
+        </div>
       </div>
     </div>
   );
