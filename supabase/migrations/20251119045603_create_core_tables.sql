@@ -1,6 +1,5 @@
--- Enable required extensions
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
-CREATE EXTENSION IF NOT EXISTS "postgis";
+-- Note: uuid-ossp extension is already enabled by default in Supabase
+-- Note: PostGIS extension is enabled in a separate migration (enable_postgis.sql)
 
 -- Create ENUM types
 CREATE TYPE user_role AS ENUM ('admin', 'staff', 'customer');
@@ -20,7 +19,7 @@ CREATE TYPE zone_type AS ENUM ('radius', 'polygon');
 -- 1. ORGANIZATIONS TABLE
 -- ============================================================================
 CREATE TABLE organizations (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   name VARCHAR(255) NOT NULL,
   slug VARCHAR(100) UNIQUE NOT NULL,
   
@@ -130,7 +129,7 @@ CREATE POLICY "Users can update their own profile"
 -- 3. CATEGORIES TABLE
 -- ============================================================================
 CREATE TABLE categories (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   organization_id UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
   
   name VARCHAR(100) NOT NULL,
@@ -166,7 +165,7 @@ CREATE POLICY "Staff can manage categories"
 -- 4. MENU_ITEMS TABLE
 -- ============================================================================
 CREATE TABLE menu_items (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   organization_id UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
   category_id UUID REFERENCES categories(id) ON DELETE SET NULL,
   
@@ -230,7 +229,7 @@ CREATE POLICY "Staff can manage menu items"
 -- 5. ITEM_MODIFIERS TABLE
 -- ============================================================================
 CREATE TABLE item_modifiers (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   menu_item_id UUID NOT NULL REFERENCES menu_items(id) ON DELETE CASCADE,
   
   -- Modifier info
@@ -275,7 +274,7 @@ CREATE POLICY "Staff can manage modifiers"
 -- 6. ORDERS TABLE
 -- ============================================================================
 CREATE TABLE orders (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   organization_id UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
   customer_id UUID REFERENCES users(id) ON DELETE SET NULL,
   
@@ -352,7 +351,7 @@ CREATE POLICY "Staff can update orders"
 -- 7. ORDER_ITEMS TABLE
 -- ============================================================================
 CREATE TABLE order_items (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   order_id UUID NOT NULL REFERENCES orders(id) ON DELETE CASCADE,
   menu_item_id UUID REFERENCES menu_items(id) ON DELETE SET NULL,
   
@@ -395,7 +394,7 @@ CREATE POLICY "Users can view items from their orders"
 -- 8. PRINTERS TABLE
 -- ============================================================================
 CREATE TABLE printers (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   organization_id UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
   
   -- Printer info
@@ -439,7 +438,7 @@ CREATE POLICY "Staff can manage printers"
 -- 9. DELIVERY_ZONES TABLE
 -- ============================================================================
 CREATE TABLE delivery_zones (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   organization_id UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
   
   -- Zone info
@@ -520,7 +519,7 @@ CREATE POLICY "Staff can manage zones"
 -- 10. CONVERSATIONS & MESSAGES TABLES
 -- ============================================================================
 CREATE TABLE conversations (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   organization_id UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
   customer_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
   order_id UUID REFERENCES orders(id) ON DELETE SET NULL,
@@ -548,7 +547,7 @@ CREATE POLICY "Users can view their conversations"
 
 -- Messages table
 CREATE TABLE messages (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   conversation_id UUID NOT NULL REFERENCES conversations(id) ON DELETE CASCADE,
   sender_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
   
