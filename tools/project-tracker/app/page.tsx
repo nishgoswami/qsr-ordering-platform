@@ -22,7 +22,7 @@ const features: Feature[] = [
     id: 'monorepo',
     name: 'Monorepo Setup',
     description: 'Turborepo with shared packages and apps structure',
-    status: 'development',
+    status: 'production',
     category: 'Infrastructure',
     icon: Package,
     details: [
@@ -37,7 +37,7 @@ const features: Feature[] = [
     id: 'database',
     name: 'Database Schema',
     description: '10 core tables with RLS and PostGIS',
-    status: 'planning',
+    status: 'production',
     category: 'Infrastructure',
     icon: Database,
     details: [
@@ -73,7 +73,7 @@ const features: Feature[] = [
     id: 'menu-browse',
     name: 'Menu Browsing',
     description: 'Customer-facing menu with search and filters',
-    status: 'planning',
+    status: 'production',
     category: 'Customer App',
     icon: Smartphone,
     details: [
@@ -89,7 +89,7 @@ const features: Feature[] = [
     id: 'cart',
     name: 'Shopping Cart',
     description: 'Cart with modifiers and customization',
-    status: 'planning',
+    status: 'production',
     category: 'Customer App',
     icon: Package,
     details: [
@@ -105,7 +105,7 @@ const features: Feature[] = [
     id: 'checkout',
     name: 'Checkout & Payment',
     description: 'Stripe integration with order placement',
-    status: 'planning',
+    status: 'development',
     category: 'Customer App',
     icon: CreditCard,
     details: [
@@ -121,7 +121,7 @@ const features: Feature[] = [
     id: 'order-tracking',
     name: 'Order Tracking',
     description: 'Real-time order status updates',
-    status: 'planning',
+    status: 'production',
     category: 'Customer App',
     icon: MapPin,
     details: [
@@ -139,7 +139,7 @@ const features: Feature[] = [
     id: 'kitchen-app',
     name: 'Kitchen Tablet App',
     description: 'Touch-friendly order management PWA',
-    status: 'planning',
+    status: 'production',
     category: 'Kitchen App',
     icon: Smartphone,
     details: [
@@ -174,7 +174,7 @@ const features: Feature[] = [
     id: 'admin-dashboard',
     name: 'Admin Dashboard',
     description: 'Restaurant management interface',
-    status: 'planning',
+    status: 'production',
     category: 'Admin',
     icon: BarChart3,
     details: [
@@ -190,7 +190,7 @@ const features: Feature[] = [
     id: 'menu-management',
     name: 'Menu Management',
     description: 'CRUD interface for menu items',
-    status: 'planning',
+    status: 'production',
     category: 'Admin',
     icon: Settings,
     details: [
