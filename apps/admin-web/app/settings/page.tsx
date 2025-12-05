@@ -1512,7 +1512,7 @@ function SettingsContent() {
                     <p className="text-gray-600 mt-1">Connect delivery platforms, email, messaging, and payment services</p>
                   </div>
                   <Link
-                    href="/settings/integrations"
+                    href="/integrations"
                     className="flex items-center gap-2 bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 text-white px-6 py-3 rounded-lg transition font-medium shadow-md"
                   >
                     <Zap className="w-5 h-5" />
@@ -1536,7 +1536,7 @@ function SettingsContent() {
                       Receive orders from third-party delivery apps directly to your kitchen tablet
                     </p>
                     <Link
-                      href="/settings/integrations"
+                      href="/integrations"
                       className="text-blue-600 hover:text-blue-700 text-sm font-medium flex items-center gap-1"
                     >
                       Configure →
@@ -1558,7 +1558,7 @@ function SettingsContent() {
                       Send order confirmations and notifications via email
                     </p>
                     <Link
-                      href="/settings/integrations"
+                      href="/integrations"
                       className="text-green-600 hover:text-green-700 text-sm font-medium flex items-center gap-1"
                     >
                       Configure →
@@ -1580,7 +1580,7 @@ function SettingsContent() {
                       Send SMS and WhatsApp notifications to customers
                     </p>
                     <Link
-                      href="/settings/integrations"
+                      href="/integrations"
                       className="text-purple-600 hover:text-purple-700 text-sm font-medium flex items-center gap-1"
                     >
                       Configure →
@@ -1602,7 +1602,7 @@ function SettingsContent() {
                       Accept online payments from your customers
                     </p>
                     <Link
-                      href="/settings/integrations"
+                      href="/integrations"
                       className="text-orange-600 hover:text-orange-700 text-sm font-medium flex items-center gap-1"
                     >
                       Configure →
