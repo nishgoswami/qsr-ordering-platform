@@ -1,0 +1,17 @@
+{
+  "threshold": 5,
+  "reporters": ["console", "json"],
+  "ignore": [
+    "**/node_modules/**",
+    "**/.next/**",
+    "**/dist/**",
+    "**/*.test.ts",
+    "**/*.backup.*",
+    "**/.turbo/**",
+    "**/build/**"
+  ],
+  "format": ["typescript", "javascript", "tsx", "jsx"],
+  "minLines": 10,
+  "minTokens": 50,
+  "output": "./reports/duplicates"
+}

@@ -1,0 +1,270 @@
+import { supabase } from './supabase';
+import { getCurrentUser, getUserRestaurant } from './auth';
+
+/**
+ * Get dashboard stats for the current restaurant
+ */
+export async function getDashboardStats() {
+  try {
+    const { restaurant } = await getUserRestaurant();
+    if (!restaurant) throw new Error('No restaurant found');
+
+    // Get today's date range
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+
+    // Fetch today's orders
+    const { data: todaysOrders, error: ordersError } = await supabase
+      .from('orders')
+      .select('id, total_amount, status')
+      .eq('restaurant_id', restaurant.id)
+      .gte('created_at', today.toISOString())
+      .lt('created_at', tomorrow.toISOString());
+
+    if (ordersError) throw ordersError;
+
+    // Fetch active orders (not delivered/cancelled)
+    const { data: activeOrders, error: activeError } = await supabase
+      .from('orders')
+      .select('id')
+      .eq('restaurant_id', restaurant.id)
+      .in('status', ['pending', 'confirmed', 'preparing', 'ready', 'out_for_delivery']);
+
+    if (activeError) throw activeError;
+
+    // Fetch menu items count
+    const { count: menuItemsCount, error: menuError } = await supabase
+      .from('menu_items')
+      .select('id', { count: 'exact', head: true })
+      .eq('restaurant_id', restaurant.id)
+      .eq('is_active', true);
+
+    if (menuError) throw menuError;
+
+    // Calculate stats
+    const todaysOrderCount = todaysOrders?.length || 0;
+    const todaysRevenue = todaysOrders?.reduce((sum, order) => sum + (order.total_amount || 0), 0) || 0;
+    const activeOrderCount = activeOrders?.length || 0;
+
+    return {
+      todaysOrders: todaysOrderCount,
+      revenue: todaysRevenue,
+      activeOrders: activeOrderCount,
+      menuItems: menuItemsCount || 0,
+    };
+  } catch (error: any) {
+    console.error('Error fetching dashboard stats:', error);
+    return {
+      todaysOrders: 0,
+      revenue: 0,
+      activeOrders: 0,
+      menuItems: 0,
+    };
+  }
+}
+
+/**
+ * Get categories for the current restaurant
+ */
+export async function getCategories() {
+  try {
+    const { restaurant } = await getUserRestaurant();
+    if (!restaurant) throw new Error('No restaurant found');
+
+    const { data, error } = await supabase
+      .from('categories')
+      .select('*')
+      .eq('restaurant_id', restaurant.id)
+      .eq('is_active', true)
+      .order('display_order', { ascending: true });
+
+    if (error) throw error;
+    return data || [];
+  } catch (error: any) {
+    console.error('Error fetching categories:', error);
+    return [];
+  }
+}
+
+/**
+ * Get menu items for the current restaurant
+ */
+export async function getMenuItems(categoryId?: string) {
+  try {
+    const { restaurant } = await getUserRestaurant();
+    if (!restaurant) throw new Error('No restaurant found');
+
+    let query = supabase
+      .from('menu_items')
+      .select(`
+        *,
+        category:categories(id, name)
+      `)
+      .eq('restaurant_id', restaurant.id);
+
+    if (categoryId && categoryId !== 'all') {
+      query = query.eq('category_id', categoryId);
+    }
+
+    const { data, error } = await query.order('name', { ascending: true });
+
+    if (error) throw error;
+    return data || [];
+  } catch (error: any) {
+    console.error('Error fetching menu items:', error);
+    return [];
+  }
+}
+
+/**
+ * Get orders for the current restaurant
+ */
+export async function getOrders(filters?: { status?: string; type?: string }) {
+  try {
+    const { restaurant } = await getUserRestaurant();
+    if (!restaurant) throw new Error('No restaurant found');
+
+    let query = supabase
+      .from('orders')
+      .select(`
+        *,
+        order_items(*)
+      `)
+      .eq('restaurant_id', restaurant.id);
+
+    if (filters?.status && filters.status !== 'all') {
+      query = query.eq('status', filters.status);
+    }
+
+    if (filters?.type && filters.type !== 'all') {
+      query = query.eq('order_type', filters.type);
+    }
+
+    const { data, error } = await query.order('created_at', { ascending: false });
+
+    if (error) throw error;
+    return data || [];
+  } catch (error: any) {
+    console.error('Error fetching orders:', error);
+    return [];
+  }
+}
+
+/**
+ * Create a new category
+ */
+export async function createCategory(name: string, description?: string) {
+  try {
+    const { restaurant } = await getUserRestaurant();
+    if (!restaurant) throw new Error('No restaurant found');
+
+    const { data, error } = await supabase
+      .from('categories')
+      .insert({
+        restaurant_id: restaurant.id,
+        name,
+        description,
+        is_active: true,
+      })
+      .select()
+      .single();
+
+    if (error) throw error;
+    return { success: true, data };
+  } catch (error: any) {
+    console.error('Error creating category:', error);
+    return { success: false, error: error.message };
+  }
+}
+
+/**
+ * Create a new menu item
+ */
+export async function createMenuItem(item: {
+  name: string;
+  description?: string;
+  price: number;
+  category_id: string;
+  image_url?: string;
+}) {
+  try {
+    const { restaurant } = await getUserRestaurant();
+    if (!restaurant) throw new Error('No restaurant found');
+
+    const { data, error } = await supabase
+      .from('menu_items')
+      .insert({
+        restaurant_id: restaurant.id,
+        ...item,
+        is_active: true,
+      })
+      .select()
+      .single();
+
+    if (error) throw error;
+    return { success: true, data };
+  } catch (error: any) {
+    console.error('Error creating menu item:', error);
+    return { success: false, error: error.message };
+  }
+}
+
+/**
+ * Update menu item
+ */
+export async function updateMenuItem(id: string, updates: any) {
+  try {
+    const { data, error } = await supabase
+      .from('menu_items')
+      .update(updates)
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (error) throw error;
+    return { success: true, data };
+  } catch (error: any) {
+    console.error('Error updating menu item:', error);
+    return { success: false, error: error.message };
+  }
+}
+
+/**
+ * Delete menu item
+ */
+export async function deleteMenuItem(id: string) {
+  try {
+    const { error } = await supabase
+      .from('menu_items')
+      .delete()
+      .eq('id', id);
+
+    if (error) throw error;
+    return { success: true };
+  } catch (error: any) {
+    console.error('Error deleting menu item:', error);
+    return { success: false, error: error.message };
+  }
+}
+
+/**
+ * Update order status
+ */
+export async function updateOrderStatus(orderId: string, status: string) {
+  try {
+    const { data, error } = await supabase
+      .from('orders')
+      .update({ status })
+      .eq('id', orderId)
+      .select()
+      .single();
+
+    if (error) throw error;
+    return { success: true, data };
+  } catch (error: any) {
+    console.error('Error updating order status:', error);
+    return { success: false, error: error.message };
+  }
+}

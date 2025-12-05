@@ -1,0 +1,44 @@
+┌─────────────────────────────────────────────────────────────────┐
+│                    🚀 PRODUCTION URLs                            │
+│                    (Bookmark These!)                             │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│  📊 Admin Portal (Settings & Control)                           │
+│  https://admin-web.vercel.app                                   │
+│  ├─ Current: https://admin-robmd1jnk...vercel.app              │
+│  └─ Use for: Section toggles, business settings                │
+│                                                                  │
+│  🏪 Restaurant Website (Public Site)                            │
+│  https://restaurant-website.vercel.app                          │
+│  ├─ Current: https://restaurant-website-9dtbggw3y...vercel.app │
+│  └─ Use for: Customer-facing website                           │
+│                                                                  │
+│  🛒 Customer Ordering App                                       │
+│  https://customer-web.vercel.app                                │
+│  ├─ Current: https://customer-6j8i2rog4...vercel.app           │
+│  └─ Use for: Menu browsing and orders                          │
+│                                                                  │
+│  👨‍🍳 Kitchen Tablet Display                                      │
+│  https://kitchen-tablet.vercel.app                              │
+│  ├─ Current: https://kitchen-tablet-o79c0dmlf...vercel.app     │
+│  └─ Use for: Kitchen order management                          │
+│                                                                  │
+├─────────────────────────────────────────────────────────────────┤
+│  ⚠️  IMPORTANT:                                                 │
+│  • Always use the .vercel.app URLs (top of each section)       │
+│  • Random deployment URLs (with dashes) change each deploy     │
+│  • Bookmark the main URLs above                                │
+│  • Hard refresh (Cmd+Shift+R) if you see old code             │
+└─────────────────────────────────────────────────────────────────┘
+
+Quick Deploy Commands:
+  ./scripts/deploy.sh admin-web production
+  ./scripts/deploy.sh restaurant-website production
+  ./scripts/deploy-all.sh  (deploy everything)
+
+Check Status:
+  vercel ls --prod
+
+Documentation:
+  DEPLOYMENT-QUICK.md      - Quick reference
+  DEVELOPMENT-STANDARDS.md - Full standards guide

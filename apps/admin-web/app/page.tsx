@@ -1,43 +1,45 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { LayoutDashboard, UtensilsCrossed, ShoppingBag, Settings, BarChart3, MapPin, Users } from 'lucide-react';
+import { LayoutDashboard, UtensilsCrossed, ShoppingBag, Settings, BarChart3, MapPin, Users, ChefHat, Package } from 'lucide-react';
+import { getUserRestaurant } from '../lib/auth';
+import { getDashboardStats } from '../lib/database';
+import AdminLayout from '../components/AdminLayout';
 
 export default function AdminDashboard() {
+  const [restaurantName, setRestaurantName] = useState('Loading...');
+  const [stats, setStats] = useState({
+    todaysOrders: 0,
+    revenue: 0,
+    activeOrders: 0,
+    menuItems: 0,
+  });
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadData() {
+      try {
+        const { restaurant } = await getUserRestaurant();
+        if (restaurant) {
+          setRestaurantName(restaurant.name);
+        }
+
+        const dashboardStats = await getDashboardStats();
+        setStats(dashboardStats);
+      } catch (error) {
+        console.error('Error loading dashboard:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadData();
+  }, []);
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white border-b border-gray-200">
-        <div className="px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <LayoutDashboard className="w-8 h-8 text-blue-600" />
-              <h1 className="text-2xl font-bold text-gray-900">Admin Dashboard</h1>
-            </div>
-            <div className="text-sm text-gray-600">
-              Demo Restaurant
-            </div>
-          </div>
-        </div>
-      </header>
-
-      <div className="flex">
-        {/* Sidebar */}
-        <aside className="w-64 bg-white border-r border-gray-200 min-h-[calc(100vh-73px)]">
-          <nav className="p-4 space-y-1">
-            <NavItem icon={LayoutDashboard} label="Dashboard" href="/" active />
-            <NavItem icon={ShoppingBag} label="Orders" href="/orders" />
-            <NavItem icon={UtensilsCrossed} label="Menu" href="/menu" />
-            <NavItem icon={MapPin} label="Delivery Zones" href="/zones" />
-            <NavItem icon={BarChart3} label="Reports" href="/reports" />
-            <NavItem icon={Users} label="Staff" href="/staff" />
-            <NavItem icon={Settings} label="Settings" href="/settings" />
-          </nav>
-        </aside>
-
-        {/* Main Content */}
-        <main className="flex-1 p-8">
-          <div className="max-w-7xl mx-auto">
+    <AdminLayout>
+      <div className="p-8">
+        <div className="max-w-7xl mx-auto">
             {/* Welcome Banner */}
             <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg shadow-lg p-8 mb-8">
               <h2 className="text-3xl font-bold mb-2">
@@ -66,29 +68,29 @@ export default function AdminDashboard() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
               <StatCard
                 title="Today's Orders"
-                value="24"
-                change="+12%"
-                changeType="positive"
+                value={loading ? '...' : stats.todaysOrders.toString()}
+                change={stats.todaysOrders > 0 ? '+' + stats.todaysOrders : 'No orders yet'}
+                changeType={stats.todaysOrders > 0 ? 'positive' : 'neutral'}
                 icon={ShoppingBag}
               />
               <StatCard
                 title="Revenue"
-                value="$482.50"
-                change="+8%"
-                changeType="positive"
+                value={loading ? '...' : `$${stats.revenue.toFixed(2)}`}
+                change={stats.revenue > 0 ? 'Today' : '$0.00'}
+                changeType={stats.revenue > 0 ? 'positive' : 'neutral'}
                 icon={BarChart3}
               />
               <StatCard
                 title="Active Orders"
-                value="5"
-                change="Live"
+                value={loading ? '...' : stats.activeOrders.toString()}
+                change={stats.activeOrders > 0 ? 'In Progress' : 'None active'}
                 changeType="neutral"
                 icon={ShoppingBag}
               />
               <StatCard
                 title="Menu Items"
-                value="45"
-                change="5 categories"
+                value={loading ? '...' : stats.menuItems.toString()}
+                change={stats.menuItems > 0 ? 'Active items' : 'Add items'}
                 changeType="neutral"
                 icon={UtensilsCrossed}
               />
@@ -111,6 +113,20 @@ export default function AdminDashboard() {
                 color="green"
               />
               <FeatureCard
+                icon={ChefHat}
+                title="Recipe Management"
+                description="Create recipes with ingredients that auto-sync to inventory"
+                href="/recipes"
+                color="orange"
+              />
+              <FeatureCard
+                icon={Package}
+                title="Inventory Tracking"
+                description="Monitor stock levels, manage suppliers, and get low stock alerts"
+                href="/inventory"
+                color="emerald"
+              />
+              <FeatureCard
                 icon={MapPin}
                 title="Delivery Zones"
                 description="Setup geofencing, delivery fees and minimum order amounts"
@@ -122,7 +138,7 @@ export default function AdminDashboard() {
                 title="Analytics & Reports"
                 description="Sales reports, popular items, peak hours and revenue insights"
                 href="/reports"
-                color="orange"
+                color="blue"
               />
               <FeatureCard
                 icon={Users}
@@ -140,30 +156,8 @@ export default function AdminDashboard() {
               />
             </div>
           </div>
-        </main>
-      </div>
-    </div>
-  );
-}
-
-function NavItem({ icon: Icon, label, href, active = false }: { 
-  icon: any; 
-  label: string; 
-  href: string;
-  active?: boolean;
-}) {
-  return (
-    <Link
-      href={href}
-      className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-        active
-          ? 'bg-blue-50 text-blue-700 font-medium'
-          : 'text-gray-700 hover:bg-gray-50'
-      }`}
-    >
-      <Icon className="w-5 h-5" />
-      <span>{label}</span>
-    </Link>
+        </div>
+    </AdminLayout>
   );
 }
 
@@ -208,6 +202,7 @@ function FeatureCard({ icon: Icon, title, description, href, color }: {
   const colorClasses = {
     blue: 'bg-blue-50 text-blue-600 group-hover:bg-blue-100',
     green: 'bg-green-50 text-green-600 group-hover:bg-green-100',
+    emerald: 'bg-emerald-50 text-emerald-600 group-hover:bg-emerald-100',
     purple: 'bg-purple-50 text-purple-600 group-hover:bg-purple-100',
     orange: 'bg-orange-50 text-orange-600 group-hover:bg-orange-100',
     pink: 'bg-pink-50 text-pink-600 group-hover:bg-pink-100',

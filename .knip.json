@@ -1,0 +1,54 @@
+{
+  "$schema": "https://unpkg.com/knip@latest/schema.json",
+  "workspaces": {
+    "apps/admin-web": {
+      "entry": [
+        "app/**/*.{ts,tsx}",
+        "lib/**/*.{ts,tsx}",
+        "components/**/*.{ts,tsx}"
+      ],
+      "project": ["**/*.{ts,tsx}"],
+      "ignore": [
+        "**/*.test.{ts,tsx}",
+        "**/*.backup.{ts,tsx}",
+        "**/node_modules/**",
+        "**/.next/**"
+      ]
+    },
+    "apps/customer-web": {
+      "entry": ["app/**/*.{ts,tsx}", "lib/**/*.{ts,tsx}"],
+      "project": ["**/*.{ts,tsx}"],
+      "ignore": ["**/*.backup.*", "**/node_modules/**", "**/.next/**"]
+    },
+    "apps/kitchen-tablet": {
+      "entry": ["app/**/*.{ts,tsx}", "lib/**/*.{ts,tsx}"],
+      "project": ["**/*.{ts,tsx}"],
+      "ignore": ["**/*.backup.*", "**/node_modules/**", "**/.next/**"]
+    },
+    "apps/restaurant-website": {
+      "entry": ["app/**/*.{ts,tsx}", "lib/**/*.{ts,tsx}"],
+      "project": ["**/*.{ts,tsx}"],
+      "ignore": ["**/*.backup.*", "**/node_modules/**", "**/.next/**"]
+    }
+  },
+  "ignore": [
+    "**/*.backup.*",
+    "**/node_modules/**",
+    "**/.next/**",
+    "**/dist/**",
+    "**/build/**",
+    "**/.turbo/**"
+  ],
+  "ignoreDependencies": [
+    "turbo",
+    "concurrently",
+    "husky",
+    "lint-staged",
+    "@types/node",
+    "@types/react",
+    "@types/react-dom",
+    "typescript",
+    "eslint",
+    "prettier"
+  ]
+}
